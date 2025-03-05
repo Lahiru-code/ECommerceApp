@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ECommerceApp.Models;
 
 namespace ECommerceApp
 {
@@ -19,6 +20,44 @@ namespace ECommerceApp
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        public void ProductsPage()
+        {
+            new ProductListWindow().Show();
+            Close();
+        }
+
+        private void RegisterBtn_Click(object sender, RoutedEventArgs e)
+        {
+            var user = new User()
+            {
+                Username = UsernameBox.Text,
+                Password = PasswordBox.Password
+            };
+
+            try
+            {
+                App.Db.Users.Add(user);
+                App.Db.SaveChanges();
+                MessageBox.Show("User Created Successfully!", "INFO", MessageBoxButton.OK, MessageBoxImage.Information);
+                ProductsPage();
+            }
+            catch (Exception ex) {
+                MessageBox.Show("User Already Exists!", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void LoginBtn_Click(object sender, RoutedEventArgs e)
+        {
+            var user = App.Db.Users.ToList().Find(u => u.Username == UsernameBox.Text &&  u.Password == PasswordBox.Password);
+            if (user != null) {
+                MessageBox.Show("Logged In Successfully!", "INFO", MessageBoxButton.OK, MessageBoxImage.Information);
+                ProductsPage();
+            } else
+            {
+                MessageBox.Show("Incorrect Username or Password!", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }
